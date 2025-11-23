@@ -2,8 +2,6 @@
 
 This is a modern Android application built using Jetpack Compose and Google ML Kit that provides two distinct modes for Optical Character Recognition (OCR): real-time text extraction from a live camera feed, and analysis of static images selected from the device gallery.
 
-The app is designed for speed, efficiency, and a clean, responsive user experience.
-
 ✨ Features
 
 - Dual Mode OCR: Seamlessly switch between Live Camera Analysis (real-time text detection) and Still Image Analysis (upload/select a photo).
@@ -11,8 +9,6 @@ The app is designed for speed, efficiency, and a clean, responsive user experien
 - Real-time Feedback: Instantly see detected text blocks while pointing your camera at documents, signs, or screens (Live Mode).
 
 - Image Selection: Easily pick images from your device gallery for deep-dive text analysis (Still Mode).
-
-- Built on Modern Android Stack: Utilizes Kotlin, Jetpack Compose, CameraX, and the highly optimized Google ML Kit for vision tasks.
 
 💻 Technology Stack
 
@@ -29,29 +25,15 @@ The app is designed for speed, efficiency, and a clean, responsive user experien
 
 🚀 How to Run Locally
 
-Prerequisites
+Setup
 
-Android Studio (Latest version recommended)
+1. Prerequisites: Android Studio and an Android API 21+ device/emulator are required.
 
-A physical Android device or emulator running Android API 21+ with Google Play Services.
+2. Clone: git clone https://github.com/RodrigoKonzenKirch/OCRWithML.git
 
-Steps:
+3. Run: Open the project in Android Studio and click the 'Run' button.
 
-1.Clone the Repository:
-
-    git clone https://github.com/RodrigoKonzenKirch/OCRWithML.git
-
-2.Open in Android Studio:
-
-Open the cloned directory in Android Studio.
-
-3.Build and Run:
-
-Select your target device (emulator or physical phone) and click the green "Run" button.
-
-⚠️ Permissions Note
-
-This application requires the CAMERA permission to function. On first launch, the app will automatically request this permission. If denied, the app will prompt the user to enable it manually for OCR features to work.
+4. Permissions: This application requires the CAMERA permission to perform live OCR.
 
 ⚙️ Core Implementation Details
 
