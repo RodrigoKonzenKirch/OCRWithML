@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -27,7 +28,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             OCRWithMLTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    PermissionRequester()
+                    PermissionRequester(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
@@ -36,7 +37,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun PermissionRequester() {
+fun PermissionRequester(modifier: Modifier) {
     // Note: The manifest must contain <uses-permission android:name="android.permission.CAMERA" />
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
 
@@ -51,11 +52,11 @@ fun PermissionRequester() {
 
     if (cameraPermissionState.status.isGranted) {
         // Permission granted, show the OCR screen with the camera view
-        OcrScreen()
+        OcrScreen(modifier)
     } else {
         // Request permission on first launch or show explanation
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             val statusText = if (cameraPermissionState.status.shouldShowRationale) {

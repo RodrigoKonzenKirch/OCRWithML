@@ -44,11 +44,11 @@ import java.util.concurrent.Executors
 private const val TAG = "RealTimeOcr"
 
 @Composable
-fun OcrScreen() {
+fun OcrScreen(modifier: Modifier = Modifier) {
     var recognizedText by remember { mutableStateOf("Point the camera at some text...") }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // 1. Camera Preview Area
