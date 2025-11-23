@@ -24,13 +24,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -361,6 +362,7 @@ fun StillOcrScreen(onBack: () -> Unit) {
     var isAnalyzing by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+    val textRecognizer = remember { TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS) }
 
     // Launcher for selecting an image from the device's storage
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -368,38 +370,43 @@ fun StillOcrScreen(onBack: () -> Unit) {
         onResult = { uri: Uri? ->
             imageUri = uri
             recognizedText = if (uri != null) "Image selected. Press 'Analyze' to begin." else "No image selected."
+            isAnalyzing = false
         }
     )
 
-    // TODO: Implement the actual analysis logic here when the user clicks 'Analyze'
+    // ML Kit analysis
     val startAnalysis = {
         if (imageUri != null) {
             isAnalyzing = true
-            recognizedText = "Analyzing image... (ML Kit integration pending)"
+            recognizedText = "Analyzing image..."
 
-            // Placeholder for demonstration:
-            // In a real app, you would use ML Kit to process the Uri here.
-            // Example ML Kit usage:
-            /*
-            val image = InputImage.fromFilePath(context, imageUri!!)
-            TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS).process(image)
-                .addOnSuccessListener { visionText ->
-                    recognizedText = visionText.text
-                    isAnalyzing = false
-                }
-                .addOnFailureListener { e ->
-                    recognizedText = "Analysis failed: ${e.localizedMessage}"
-                    isAnalyzing = false
-                }
-            */
+            try {
+                // 1. Create InputImage from the file path (Uri)
+                val image = InputImage.fromFilePath(context, imageUri!!)
 
-            // Simulation of analysis time for now
-            android.os.Handler(context.mainLooper).postDelayed({
-                recognizedText = "Placeholder Result: Successfully extracted text from static image."
+                // 2. Start the recognition process
+                textRecognizer.process(image)
+                    .addOnSuccessListener { visionText ->
+                        recognizedText = if (visionText.text.isBlank()) {
+                            "No text detected in the image."
+                        } else {
+                            visionText.text
+                        }
+                        isAnalyzing = false
+                    }
+                    .addOnFailureListener { e ->
+                        recognizedText = "Analysis failed: ${e.localizedMessage ?: "Unknown error"}"
+                        Log.e(TAG, "Still image OCR failed", e)
+                        isAnalyzing = false
+                    }
+            } catch (e: Exception) {
+                recognizedText = "Error loading image: ${e.localizedMessage}"
+                Log.e(TAG, "Error creating InputImage from Uri", e)
                 isAnalyzing = false
-            }, 2000)
+            }
         }
     }
+
 
     Column(
         modifier = Modifier
@@ -472,7 +479,7 @@ fun StillOcrScreen(onBack: () -> Unit) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Result Area
+       // Result Area (Scrollable to accommodate long text)
         Text(
             text = "OCR Result:",
             style = MaterialTheme.typography.titleMedium,
@@ -481,15 +488,15 @@ fun StillOcrScreen(onBack: () -> Unit) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (isAnalyzing) {
-            CircularProgressIndicator(modifier = Modifier.padding(16.dp))
-        } else {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 8.dp)
+        ) {
             Text(
                 text = recognizedText,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-                    .padding(horizontal = 8.dp),
                 style = MaterialTheme.typography.bodyLarge
             )
         }
