@@ -13,6 +13,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.ocrwithml.ui.theme.OCRWithMLTheme
@@ -40,6 +44,7 @@ class MainActivity : ComponentActivity() {
 fun PermissionRequester(modifier: Modifier) {
     // Note: The manifest must contain <uses-permission android:name="android.permission.CAMERA" />
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
+    var currentScreen by remember { mutableStateOf(Screen.MENU) }
 
     LaunchedEffect(Unit) {
         if (!cameraPermissionState.status.isGranted) {
@@ -52,7 +57,7 @@ fun PermissionRequester(modifier: Modifier) {
 
     if (cameraPermissionState.status.isGranted) {
         // Permission granted, show the OCR screen with the camera view
-        OcrScreen(modifier)
+        AppScreens(currentScreen) { screen -> currentScreen = screen }
     } else {
         // Request permission on first launch or show explanation
         Box(
