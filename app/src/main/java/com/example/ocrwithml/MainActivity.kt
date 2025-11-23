@@ -42,7 +42,6 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun PermissionRequester(modifier: Modifier) {
-    // Note: The manifest must contain <uses-permission android:name="android.permission.CAMERA" />
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     var currentScreen by remember { mutableStateOf(Screen.MENU) }
 
